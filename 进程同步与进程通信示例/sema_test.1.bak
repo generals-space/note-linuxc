@@ -1,0 +1,188 @@
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
+#include <string.h>
+
+//N is the sum of buffer pool
+#define N 10
+typedef struct share_status{
+	int in;
+	int out;
+	int buffer[N];
+}share_status;
+union semun{
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
+	struct seminfo *__buf;
+};
+int sem_id,shm_id;
+int set_semaphore(int order, int value);
+int del_semaphore();
+int get_semaphore(int order);
+int semaphore_p();
+int semaphore_v();
+
+int main(){
+	int i;
+	char answer;
+	void *share_buf = (void *)0;
+	share_status *shared_status;
+
+	srand((unsigned int)getpid());
+    // 创建信号量集, 包含3个信号量.
+	sem_id = semget((key_t)1234, 3, 0666 | IPC_CREAT);
+	
+	shm_id = shmget((key_t)1234, sizeof(share_status), 0666 | IPC_CREAT);
+	share_buf = shmat(shm_id, (void *)0, 0);
+	printf("attach to %X\n", (int)share_buf);
+	shared_status = (share_status *)share_buf;
+
+	printf("Is this the first process ?Please inut y or n\n");
+	scanf("%c",&answer);
+	getchar();
+	if(answer == 'y'){
+		//init the semaphore
+		//the first semaphore is the mutex
+		set_semaphore(0,1);	
+		//the second semaphore is the empty nums in buffer pool
+		set_semaphore(1,N);	
+		//the third semaphore is the full nums in buffer pool
+		set_semaphore(2,0);	
+
+		//init the shared memory
+		shared_status->in = 0;
+		shared_status->out = 0;
+		for(i = 0; i < N; i ++){
+			shared_status->buffer[i] = 0;
+		}
+	}
+	printf("There is %d resource avaliable\n", get_semaphore(2));
+
+	printf("Are you a producer ?Please input y or n\n");
+	scanf("%c",&answer);
+	if(answer == 'y'){
+		while(1){
+			//p the empty
+			if(!semaphore_p(1)){
+				printf("producer's p function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			//p the mutex
+			if(!semaphore_p(0)){
+				printf("producer's p function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			//the critical area
+			shared_status->in = shared_status->in % N;
+			shared_status->buffer[shared_status->in] = 1;
+			printf("Process %d put a resource and the sum is %d", getpid(),get_semaphore(2) + 1);
+			printf("the buffer pool condition:");
+			for(i = 0; i < N; i ++){
+				printf("%d",shared_status->buffer[i]);
+			}
+			printf("\n");
+			shared_status->in ++;
+
+			sleep(rand() % 3);
+			//the critical area end
+			//v the mutex
+			if(!semaphore_v(0)){
+				printf("producer's v function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			//v the full
+			if(!semaphore_v(2)){
+				printf("producer's v function failed\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}else{
+		while(1){
+			if(!semaphore_p(2)){
+				printf("consumer's p function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			if(!semaphore_p(0)){
+				printf("consumer's p function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			shared_status->out = shared_status->out % N;
+			shared_status->buffer[shared_status->out] = 0;
+			printf("Process %d get a resource and the sum is%d ", getpid(),get_semaphore(2) - 1);
+			printf("the buffer pool condition:");
+			for(i = 0; i < N; i ++){
+				printf("%d",shared_status->buffer[i]);
+			}
+			printf("\n");
+			shared_status->out ++;
+
+			sleep(rand() % 3);
+			if(!semaphore_v(0)){
+				printf("consumer's v function failed\n");
+				exit(EXIT_FAILURE);
+			}
+			if(!semaphore_v(1)){
+				printf("consumer's v function failed\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+	
+	}
+	del_semaphore();
+	shmdt(shared_status);
+	exit(EXIT_SUCCESS);
+}
+int set_semaphore(int order, int value){
+	union semun sem_union;
+	sem_union.val = value;
+	if(semctl(sem_id, order, SETVAL, sem_union) == -1){
+		return 0;
+	}else{
+		return 1;
+	}
+}
+int del_semaphore(){
+	union semun sem_union;
+	if(semctl(sem_id, 0, IPC_RMID, sem_union) == -1){
+		printf("failed to delete semaphore\n");
+		return 0;
+	}else{
+		return 1;
+	}
+}
+int get_semaphore(int order){
+	union semun sem_union;
+	return semctl(sem_id, order, GETVAL, sem_union);
+}
+// P操作.
+// 尝试获取信号量集中第order个信号量
+int semaphore_p(int order){
+	struct sembuf sem;
+	sem.sem_num = order;
+	sem.sem_op = -1;
+	sem.sem_flg = SEM_UNDO;
+	if(semop(sem_id, &sem, 1) == -1){
+		printf("semaphore_p failed\n");
+		return 0;
+	}else{
+		return 1;
+	}
+}
+// V操作
+// 释放信号量集中第order个信号量
+int semaphore_v(int order){
+	struct sembuf sem;
+	sem.sem_num = order;
+	sem.sem_op = 1;
+	sem.sem_flg = SEM_UNDO;
+	if(semop(sem_id, &sem, 1) == -1){
+		printf("semaphore_v failed\n");
+		return 0;
+	}else{
+		return 1;
+	}
+}
