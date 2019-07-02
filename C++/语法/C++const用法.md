@@ -1,4 +1,4 @@
-# C语言-const用法
+# C++const用法
 
 ## 1. 用const修饰函数参数
 
@@ -29,6 +29,7 @@ void StringCopy(char*strDestination, const char *strSource);
 以此类推，是否应将void Func(int x) 改写为void Func(const int& x)，以便提高效率？完全没有必要，因为内部数据类型的参数(同在类实例对象中的数据，应该指的是成员函数的参数)不存在构造、析构的过程，而复制也非常快，"值传递"和"引用传递"的效率几乎相当。
 
 ### 1.3 "const&"修饰输入参数的用法总结
+
 对于非内部数据类型的输入参数，应该将“值传递”的方式改为“const引用传递”，目的是提高效率。例如将voidFunc(A a) 改为voidFunc(const A &a)。
 对于内部数据类型的输入参数，不要将"值传递"的方式改为"const引用传递"。否则既达不到提高效率的目的，又降低了函数的可理解性。例如voidFunc(int x) 不应该改为voidFunc(const int &x)。
 
@@ -81,7 +82,7 @@ a = b = c;//链式赋值
 
 任何不会修改数据成员的函数都应该声明为const类型。这样如果在编写const成员函数时，不慎修改了数据成员，或者调用了其它非const成员函数，编译器将指出错误，这无疑会提高程序的健壮性。以下程序中，类Stack的成员函数GetCount仅用于计数，从逻辑上讲GetCount应当为const函数。编译器将指出GetCount函数中的错误。
 
-```
+```c++
 class Stack
 {
     public:
@@ -110,7 +111,7 @@ d.然而加上mutable修饰符的数据成员，对于任何情况下通过任�
 
 3.const修饰成员函数的本质
 
-```
+```c++
 Class A
 {
     ...

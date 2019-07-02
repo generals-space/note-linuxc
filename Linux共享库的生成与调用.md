@@ -22,9 +22,9 @@ so文件源程序不需要main函数, 就算有也不会被执行.
  * function: 取两者之前较大值
  * 这里没有依赖任何其他库所以就没有声明
  * */
-int max(int a, int b)  
+int max(int a, int b) 
 {  
-    return a > b ? a : b;  
+    return a > b ? a : b; 
 }
 ```
 

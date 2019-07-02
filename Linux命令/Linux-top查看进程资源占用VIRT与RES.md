@@ -1,4 +1,4 @@
-# top查看进程资源占用VIRT与RES
+# Linux-top查看进程资源占用VIRT与RES
 
 <!tags!>: <!虚拟内存!> <!物理内存!> <!共享内存!>
 

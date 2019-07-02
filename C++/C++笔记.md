@@ -261,7 +261,7 @@ C++支持多重继承，所以super无法得到究竟是哪一个父类的同名
 在子类外，可以通过实例化一个子类对象，使用"对象名.父类名::方法名()"调用。
 示例：
 
-```
+```c++
 #include <iostream>
 using namespace std;
 class Parent

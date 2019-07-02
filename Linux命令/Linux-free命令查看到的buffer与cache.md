@@ -1,4 +1,4 @@
-# linux-free命令查看到的buffer与cache
+# Linux-free命令查看到的buffer与cache
 
 参考文章
 

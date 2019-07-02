@@ -2,7 +2,7 @@
 
 参考文章
 
-[Linux下利用core来调试segmentation fault](http://blog.csdn.net/jubincn/article/details/7291472)
+1. [Linux下利用core来调试segmentation fault](http://blog.csdn.net/jubincn/article/details/7291472)
 
 Segmentation fault(段错误)是由于虚拟内存管理单元的异常所致，而该异常则通常是由于解引用一个未初始化或非法值的指针引起的。
 
@@ -58,3 +58,4 @@ core: ELF 64-bit LSB  core file x86-64, version 1 (SYSV), SVR4-style, from './hu
 ## 2. 问题汇总
 
 1. 声明了指针, 未分配空间就直接使用`memset`初始化一段内存, 当函数退出时会出现这个问题.
+2. 在一个函数内malloc分配一块较大内存时可能出现, 因为在linux系统下栈空间大小默认为8M, 可以用ulimit查看.
