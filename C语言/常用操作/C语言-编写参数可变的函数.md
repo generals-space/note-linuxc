@@ -10,6 +10,8 @@
 
 3. [C library macro - va_start()](https://www.tutorialspoint.com/c_standard_library/c_macro_va_start.htm)
 
+4. [C程序对命令行参数的处理方法及实例](http://smilejay.com/2010/12/c-handle-options/)
+
 在编写C程序时，会遇到`printf`这样形参可变的函数，可能会好奇这是怎么做到的。
 
 一般我们自己要新写一个函数时，都是在头文件中提前声明好函数，规定函数参数的个数和类型。然后在`.c`源码文件中，去定义这个函数的源码，在源码中调用这些函数参数。
