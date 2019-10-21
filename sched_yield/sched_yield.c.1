@@ -1,0 +1,81 @@
+## 示例来源: [Linux多线程学习（七）sched_yield](https://blog.csdn.net/xiaoyeyopulei/article/details/7965533)
+## 编译方法: gcc -o sched_yield -lpthread sched_yield.c
+
+#define _MULTI_THREADED
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
+#define            LOOPCONSTANT     1000
+#define            THREADS          3
+
+// mutex 全局变量
+pthread_mutex_t    mutex = PTHREAD_MUTEX_INITIALIZER;
+int                i,j,k,l;
+
+// checkResults: 参数 rc 是某些线程函数的返回值, 即 result code.
+// 这个函数的作用就是, 检查 rc 是否不为0, 因为一旦不为0, 
+// 就表示线程函数出错, 需要打印错误信息并退出.
+// ...好像断言啊
+static void checkResults(char *string, int rc) {
+    if(rc) {
+        printf("Error on : %s, rc=%d", string, rc);
+        // EXIT_FAILURE 在 stdlib 中定义.
+        exit(EXIT_FAILURE);
+    }
+    return;
+}
+
+// main函数中创建的线程要执行的函数.
+void *threadfunc(void *param){ 
+    int loop = 0; 
+    int rc; 
+    int order = (int) param;
+
+    printf("Entered thread %d, tid: %lu\n", order, pthread_self()); 
+
+    for (loop = 0; loop < LOOPCONSTANT; ++ loop) { 
+        rc = pthread_mutex_lock(&mutex); 
+        printf("thread %d, loop %d\n", order, loop); 
+        checkResults("pthread_mutex_lock()\n", rc); 
+        // 执行一些没什么实际意义的操作
+        i++, j++, k++, l++; 
+        rc = pthread_mutex_unlock(&mutex); 
+        checkResults("pthread_mutex_unlock()\n", rc); 
+        // sched_yield(); 
+    } 
+    printf("thread %d completed\n", order); 
+    return NULL;
+}
+
+int main(int argc, char **argv){ 
+    pthread_t tid[THREADS]; 
+    int rc = 0; // rc: result code
+    int order = 0; 
+    // argc[0] 指的是程序名称
+    printf("Enter Testcase - %s\n", argv[0]); 
+
+    rc = pthread_mutex_lock(&mutex); 
+    checkResults("pthread_mutex_lock()\n", rc); 
+
+    printf("Creating %d threads\n", THREADS); 
+    for (order = 0; order < THREADS; ++ order) {
+        rc = pthread_create(&tid[order], NULL, threadfunc, (void *)order); 
+        checkResults("pthread_create()\n", rc); 
+    }
+
+    sleep(1); 
+
+    rc = pthread_mutex_unlock(&mutex); 
+    checkResults("pthread_mutex_unlock()\n", rc); 
+
+    printf("Wait for results\n"); 
+    for (order = 0; order < THREADS; ++ order) { 
+        rc = pthread_join(tid[order], NULL); 
+        checkResults("pthread_join()\n", rc); 
+    }
+    pthread_mutex_destroy(&mutex); 
+    printf("Main completed\n"); 
+    return 0;
+} 
