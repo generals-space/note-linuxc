@@ -16,7 +16,7 @@
 
 #define            THREADS          3
 
-void *tfn(void *arg)
+void *thread_fn(void *arg)
 {
     int order = *(int *)arg;
     // pthread_self() 获取的线程id与 pthread_create()时第一个参数被写入的值相同.
@@ -26,14 +26,15 @@ void *tfn(void *arg)
 
 int main(int argc, char *argv[])
 {
+    // 定义线程id数组
     pthread_t tid[THREADS]; 
 
     for(int i = 0; i < THREADS; i ++)
     {
         // 这里写入的 tid[i] 与该线程通过 pthread_self() 获取的线程id相同.
-        pthread_create(&tid[i], NULL, tfn, &i);
+        pthread_create(&tid[i], NULL, thread_fn, &i);
     }
-    // 不加 sleep 时, tfn 的打印结果可能会有出入, 因为执行太快了,
+    // 不加 sleep 时, thread_fn 的打印结果可能会有出入, 因为执行太快了,
     // 但仍然是错的.
     sleep(3);
 
@@ -66,8 +67,8 @@ $ ./thread
 
 我在参考文章2中找到了解决方法, 只需要修改`pthread_create`和线程函数中获取参数的部分.
 
-1. main函数中, `pthread_create(&tid[i], NULL, tfn, (void *)i);`
-2. 线程函数tfn中, `int order = (int)arg;`
+1. main函数中, `pthread_create(&tid[i], NULL, thread_fn, (void *)i);`
+2. 线程函数thread_fn中, `int order = (int)arg;`
 
 这种传参与取值的方法看起来有点奇怪, 但却是正确的...
 
