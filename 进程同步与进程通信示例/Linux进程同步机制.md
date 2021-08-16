@@ -1,5 +1,9 @@
 # Linux进程同步机制与通信机制
 
+参考文章
+
+1. [进程间通信之-信号量semaphore--linux内核剖析（十）](https://kernel.blog.csdn.net/article/details/50994533)
+
 以linux下的gcc为编译器, 调用linux提供的多种系统调用, 实现进程管理相关功能, 包括: 
 
 1. 进程创建及撤销. 实现多个进程的创建、执行及撤销. 

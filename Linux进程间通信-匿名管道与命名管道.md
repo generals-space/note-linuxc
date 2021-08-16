@@ -2,15 +2,14 @@
 
 参考文章
 
-[Linux进程间通信之管道(pipe)、命名管道(FIFO)与信号(Signal)](http://www.cnblogs.com/biyeymyhjob/archive/2012/11/03/2751593.html)
-
-[【Linux/OS/Network】匿名管道（pipe）和命名管道（FIFO）](http://blog.csdn.net/SuLiJuan66/article/details/50588885)
+1. [Linux进程间通信之管道(pipe)、命名管道(FIFO)与信号(Signal)](http://www.cnblogs.com/biyeymyhjob/archive/2012/11/03/2751593.html)
+2. [【Linux/OS/Network】匿名管道（pipe）和命名管道（FIFO）](http://blog.csdn.net/SuLiJuan66/article/details/50588885)
 
 示例
 
 `mkpipe.c`
 
-```c
+```c++
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
