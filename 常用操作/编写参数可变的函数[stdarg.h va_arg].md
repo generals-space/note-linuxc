@@ -1,15 +1,10 @@
-# C语言-编写参数可变的函数
-
-<!tags!>: <!c!> <!va_start!>
+# 编写参数可变的函数[stdarg.h va_arg]
 
 参考文章
 
 1. [va_start和va_end使用详解](http://www.cnblogs.com/hanyonglu/archive/2011/05/07/2039916.html)
-
 2. [linux下利用va_start编写参数可变的函数](http://ju.outofmemory.cn/entry/154069)
-
 3. [C library macro - va_start()](https://www.tutorialspoint.com/c_standard_library/c_macro_va_start.htm)
-
 4. [C程序对命令行参数的处理方法及实例](http://smilejay.com/2010/12/c-handle-options/)
 
 在编写C程序时，会遇到`printf`这样形参可变的函数，可能会好奇这是怎么做到的。
@@ -36,7 +31,7 @@ int sprintf(char *str, const char *format, ...);
 
 下面是 <stdarg.h> 里面重要的几个宏定义如下：
 
-```c
+```c++
 typedef char* va_list;
 void va_start(va_list ap, prev_param); /* ANSI version */
 type va_arg(va_list ap, type);
@@ -48,16 +43,13 @@ void va_end(va_list ap);
 以下是`va_*`系函数的使用流程
 
 1. 在调用参数表之前，定义一个`va_list`类型的变量，假设为`ap`；
-
 2. 然后应该对`ap`进行初始化，让它指向可变参数表里面的第一个参数，这是通过`va_start`来实现的，第一个参数是`ap`本身，第二个参数是传入的变参表前面紧挨着的一个变量,即`...`之前的那个确定的参数；
-
 3. 然后是获取参数，调用`va_arg`，它的第一个参数是`ap`，第二个参数是要获取的参数的指定类型，然后返回这个指定类型的值，并且把`ap`的位置指向变参表的下一个变量位置；
-
 4. 获取所有的参数之后，我们有必要将这个`ap`指针关掉，以免发生危险，方法是调用`va_end`，它将输入的参数`ap`置为 NULL. 应该养成获取完参数表之后关闭指针的习惯. 说白了，就是让我们的程序具有健壮性。通常`va_start`和`va_end`是成对出现。
 
 ## 2. 示例1
 
-```c
+```c++
 /*va_test1.c*/
 #include <stdio.h>
 #include <string.h>
