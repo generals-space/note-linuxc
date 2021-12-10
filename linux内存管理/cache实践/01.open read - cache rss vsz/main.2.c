@@ -1,9 +1,3 @@
-参考文章
-
-1. [Linux C语言中的read write lseek的使用](https://blog.csdn.net/psr1999/article/details/53014092)
-
-
-```c++
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -70,68 +64,6 @@ int main()
 
     log_info("before open file");
     // dd if=/dev/urandom of=/tmp/ddfile bs=1M count=4096
-    char* path = "/tmp/ddfile";
-
-    scanf("%d", &test); //等待输入
-    log_info("before open");
-
-    int fd = open(path, O_RDONLY);
-    if(fd < 0){
-        log_error("failed to open ns file %s: %s\n", path, strerror(errno));
-        exit(1);
-    }
-    log_info("after open, before read");
-
-    scanf("%d", &test); //等待输入
-
-    char buf[BUFSIZ];
-    while(result = read(fd, buf, BUFSIZ)){}
-    log_info("after read, wait stop");
-
-    scanf("%d", &test); //等待输入
-
-    return 0;
-}
-
-/*
-   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                    CODE    DATA   USED
-127690 root      20   0    4352    540    448 S   0.0  0.0   0:00.00 main                          4     320    540
-
-[root@k8s-master-01 ~]# ps -p 117343 -o pid,%cpu,%mem,rss,vsz,drs,trs,size,start_time,command
-   PID %CPU %MEM   RSS    VSZ   DRS  TRS  SIZE START COMMAND
-127690  1.1  0.0   528   4352  4348    3   320 20:17 ./main
-*/
-
-```
-
-## 实验1
-
-使用如下命令创建一个4GB的大文件.
-
-```
-dd if=/dev/urandom of=/tmp/ddfile bs=1M count=4096
-```
-
-`open()`打开一个文件, 并不会影响操作系统的cache数据, 只有在`read()`操作时才会.
-
-另外, `read()`虽然会使OS的cache数量, 但这个数量并不会反应在进程本身的内存中, 不管是使用ps还是top, 都没有办法在指标中看到(CODE, DATA, USED 等都没有发生变化). 
-
-所以这部分cache其实是OS自身维护的, 并不存在进程的堆栈中.
-
-------
-
-但是, 在执行`read()`后, OS的cache只增加了1.8G, 和文件本身的大小根本对不上, 这还是个问题...
-
-## 实验2
-
-```c++
-int main()
-{
-    int test = 0;
-    int result = 0;
-
-    log_info("before open file");
-    // dd if=/dev/urandom of=/tmp/ddfile bs=1M count=4096
     char* path_read = "/tmp/ddfile";
     char* path_write = "/tmp/ddfile2";
 
@@ -169,6 +101,3 @@ int main()
 
     return 0;
 }
-```
-
-写文件并不会影响cache增加的数量, 仍然是1.8G左右.
