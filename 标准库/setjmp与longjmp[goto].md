@@ -23,7 +23,7 @@ void main(){
     int i;
 
     // 第1次执行 setjmp 设置存档点, 会返回0;
-    // 第2次则由 longjmp 执行, 返回值为0;
+    // 第2次则由 longjmp 执行, 返回值为3;
     i = setjmp(env);
     printf("i = %d\n", i);
     if (i != 0 ) exit(0);

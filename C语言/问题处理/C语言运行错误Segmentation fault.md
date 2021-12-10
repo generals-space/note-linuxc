@@ -1,6 +1,6 @@
 # C语言运行错误Segmentation fault
 
-```c
+```c++
 #include <stdio.h> 
 #include <string.h> 
 int main(void) 
