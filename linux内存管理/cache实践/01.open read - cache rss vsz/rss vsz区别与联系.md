@@ -1,6 +1,6 @@
 参考文章
 
-1. [[译] linux内存管理之RSS和VSZ的区别](https://www.pengrl.com/p/21292/)
+1. [[译] https://github.com/hoytech/vmtouch.git](https://www.pengrl.com/p/21292/)
     - RSS: 400K + 1000K + 100K = 1500K
     - VSZ: 500K + 2500K + 200K = 3200K
     - 二进制文件, 进程堆/栈, 以及动态链接库等, 都可以被swap(即不会全在物理内存中)
