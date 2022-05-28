@@ -3,6 +3,7 @@
 参考文章
 
 1. [gdb深入学习手册](https://segmentfault.com/a/1190000022499197)
+2. [GDB 常用命令学习](https://blog.csdn.net/The_sun0808/article/details/50000447)
 
 使用gdb调试的程序在使用gcc编译时需要添加`-g`选项, 否则无法在调试过程中使用`list`命令查看函数源码.
 
